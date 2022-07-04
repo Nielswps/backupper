@@ -8,7 +8,7 @@ use std::thread::sleep;
 use std::time::Duration;
 use tempfile;
 
-use backup::copy;
+use backupper::copy;
 
 fn create_file(dir: &Path, file_contents: &&str, file_name: &str) {
     let file = File::create(dir.join(file_name.to_owned() + ".txt"));
@@ -34,7 +34,7 @@ fn copy_new_file_from_source_to_target() {
 
     create_file(source_path, &file_contents, file_name);
 
-    match copy(source_path, target_path, &[]) {
+    match copy(source_path, target_path, vec![]) {
         Ok(_) => {}
         Err(e) => panic!("{}", e)
     }
@@ -61,7 +61,7 @@ fn overwrite_file_at_same_name_and_newer_timestamp() {
     sleep(Duration::new(1, 0));
     create_file(source_path, &modified_file_contents, file_name);
 
-    match copy(source_path, target_path, &[]) {
+    match copy(source_path, target_path, vec![]) {
         Ok(_) => {}
         Err(e) => panic!("{}", e)
     }
@@ -87,7 +87,7 @@ fn skip_file_at_same_name_and_same_timestamp() {
     create_file(target_path, &original_file_contents, file_name);
     create_file(source_path, &modified_file_contents, file_name);
 
-    match copy(source_path, target_path, &[]) {
+    match copy(source_path, target_path, vec![]) {
         Ok(_) => {}
         Err(e) => panic!("{}", e)
     }
@@ -116,7 +116,7 @@ fn skip_file_at_same_name_and_older_timestamp() {
 
     create_file(target_path, &original_file_contents, file_name);
 
-    match copy(source_path, target_path, &[]) {
+    match copy(source_path, target_path, vec![]) {
         Ok(_) => {}
         Err(e) => panic!("{}", e)
     }
@@ -143,7 +143,7 @@ fn copy_dir_from_source_to_target() {
 
     create_file(subdir.as_path(), &file_contents, file_name);
 
-    match copy(source_path, target_path, &[]) {
+    match copy(source_path, target_path, vec![]) {
         Ok(_) => {}
         Err(e) => panic!("{}", e)
     }
@@ -176,7 +176,7 @@ fn overwrite_part_of_dir_and_skip_rest_based_on_timestamps() {
 
     create_file(source_path.join("subDir").as_path(), &modified_file_contents, file_2_name);
 
-    match copy(source_path, target_path, &[]) {
+    match copy(source_path, target_path, vec![]) {
         Ok(_) => {}
         Err(e) => panic!("{}", e)
     }
@@ -207,7 +207,7 @@ fn copy_dir_but_ignored_blacklist() {
     create_file(sub_dir.as_path(), &file_contents, file_name);
     create_file(blacklisted_dir.as_path(), &file_contents, "ignoredFile");
 
-    match copy(source_path, target_path, &["blacklisted_dir"]) {
+    match copy(source_path, target_path, vec![String::from("blacklisted_dir")]) {
         Ok(_) => {}
         Err(e) => panic!("{}", e)
     }
@@ -240,7 +240,7 @@ fn copy_dir_and_file_nested_in_hierarchy() {
     create_file(sub_dir.as_path(), &file_contents, &(file_name.to_owned() + "-1"));
     create_file(sub_sub_dir.as_path(), &file_contents, &(file_name.to_owned() + "-2"));
 
-    match copy(source_path, target_path, &["blacklisted_dir"]) {
+    match copy(source_path, target_path, vec![String::from("blacklisted_dir"), String::from("blacklisted_dir_2")]) {
         Ok(_) => {}
         Err(e) => panic!("{}", e)
     }

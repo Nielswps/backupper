@@ -2,7 +2,7 @@ use std::cmp::Ordering;
 use std::fs;
 use std::path::{Path, PathBuf};
 
-pub fn copy<U: AsRef<Path>, V: AsRef<Path>>(from: U, to: V, blacklist: &[&str]) -> Result<(), std::io::Error> {
+pub fn copy<U: AsRef<Path>, V: AsRef<Path>>(from: U, to: V, blacklist: Vec<String>) -> Result<(), std::io::Error> {
     let mut stack = Vec::new();
     stack.push(PathBuf::from(from.as_ref()));
 
@@ -10,7 +10,7 @@ pub fn copy<U: AsRef<Path>, V: AsRef<Path>>(from: U, to: V, blacklist: &[&str]) 
     let output_root = PathBuf::from(to.as_ref());
 
     while let Some(working_path) = stack.pop() {
-        if  blacklist.iter().any(|&dir| working_path.ends_with(dir)) {
+        if  blacklist.iter().any(|dir| working_path.ends_with(dir)) {
             continue;
         }
 

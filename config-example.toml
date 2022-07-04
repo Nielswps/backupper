@@ -1,0 +1,4 @@
+# Please create a new file called 'config.toml' with your settings
+src_dir = "/home/user/Documents"
+dst_dir = "/media/user/HARD_DRIVE"
+blacklist = [ "gitHub" ] # In this case, any directory encountered in the directory hierarchy called "gitHub" will be ignored
