@@ -1,7 +1,7 @@
 extern crate core;
 
 use std::fs;
-use std::fs::{File, read_to_string};
+use std::fs::{read_to_string, File};
 use std::io::Write;
 use std::path::Path;
 use std::thread::sleep;
@@ -36,12 +36,14 @@ fn copy_new_file_from_source_to_target() {
 
     match copy(source_path, target_path, vec![]) {
         Ok(_) => {}
-        Err(e) => panic!("{}", e)
+        Err(e) => panic!("{}", e),
     }
 
     assert!(target_path.join(file_name.to_owned() + ".txt").exists());
-    assert_eq!(read_to_string(target_path.join(file_name.to_owned() + ".txt")).unwrap(), file_contents.to_owned() + "\n");
-
+    assert_eq!(
+        read_to_string(target_path.join(file_name.to_owned() + ".txt")).unwrap(),
+        file_contents.to_owned() + "\n"
+    );
 }
 
 #[test]
@@ -63,12 +65,18 @@ fn overwrite_file_at_same_name_and_newer_timestamp() {
 
     match copy(source_path, target_path, vec![]) {
         Ok(_) => {}
-        Err(e) => panic!("{}", e)
+        Err(e) => panic!("{}", e),
     }
 
     assert!(target_path.join(file_name.to_owned() + ".txt").exists());
-    assert_eq!(read_to_string(source_path.join(file_name.to_owned() + ".txt")).unwrap(), modified_file_contents.to_owned() + "\n");
-    assert_eq!(read_to_string(target_path.join(file_name.to_owned() + ".txt")).unwrap(), modified_file_contents.to_owned() + "\n");
+    assert_eq!(
+        read_to_string(source_path.join(file_name.to_owned() + ".txt")).unwrap(),
+        modified_file_contents.to_owned() + "\n"
+    );
+    assert_eq!(
+        read_to_string(target_path.join(file_name.to_owned() + ".txt")).unwrap(),
+        modified_file_contents.to_owned() + "\n"
+    );
 }
 
 #[test]
@@ -89,12 +97,18 @@ fn skip_file_at_same_name_and_same_timestamp() {
 
     match copy(source_path, target_path, vec![]) {
         Ok(_) => {}
-        Err(e) => panic!("{}", e)
+        Err(e) => panic!("{}", e),
     }
 
     assert!(target_path.join(file_name.to_owned() + ".txt").exists());
-    assert_eq!(read_to_string(source_path.join(file_name.to_owned() + ".txt")).unwrap(), modified_file_contents.to_owned() + "\n");
-    assert_eq!(read_to_string(target_path.join(file_name.to_owned() + ".txt")).unwrap(), original_file_contents.to_owned() + "\n");
+    assert_eq!(
+        read_to_string(source_path.join(file_name.to_owned() + ".txt")).unwrap(),
+        modified_file_contents.to_owned() + "\n"
+    );
+    assert_eq!(
+        read_to_string(target_path.join(file_name.to_owned() + ".txt")).unwrap(),
+        original_file_contents.to_owned() + "\n"
+    );
 }
 
 #[test]
@@ -118,12 +132,18 @@ fn skip_file_at_same_name_and_older_timestamp() {
 
     match copy(source_path, target_path, vec![]) {
         Ok(_) => {}
-        Err(e) => panic!("{}", e)
+        Err(e) => panic!("{}", e),
     }
 
     assert!(target_path.join(file_name.to_owned() + ".txt").exists());
-    assert_eq!(read_to_string(source_path.join(file_name.to_owned() + ".txt")).unwrap(), modified_file_contents.to_owned() + "\n");
-    assert_eq!(read_to_string(target_path.join(file_name.to_owned() + ".txt")).unwrap(), original_file_contents.to_owned() + "\n");
+    assert_eq!(
+        read_to_string(source_path.join(file_name.to_owned() + ".txt")).unwrap(),
+        modified_file_contents.to_owned() + "\n"
+    );
+    assert_eq!(
+        read_to_string(target_path.join(file_name.to_owned() + ".txt")).unwrap(),
+        original_file_contents.to_owned() + "\n"
+    );
 }
 
 #[test]
@@ -145,11 +165,22 @@ fn copy_dir_from_source_to_target() {
 
     match copy(source_path, target_path, vec![]) {
         Ok(_) => {}
-        Err(e) => panic!("{}", e)
+        Err(e) => panic!("{}", e),
     }
 
-    assert!(target_path.join("subDir").join(file_name.to_owned() + ".txt").exists());
-    assert_eq!(read_to_string(target_path.join("subDir").join(file_name.to_owned() + ".txt")).unwrap(), file_contents.to_owned() + "\n");
+    assert!(target_path
+        .join("subDir")
+        .join(file_name.to_owned() + ".txt")
+        .exists());
+    assert_eq!(
+        read_to_string(
+            target_path
+                .join("subDir")
+                .join(file_name.to_owned() + ".txt")
+        )
+        .unwrap(),
+        file_contents.to_owned() + "\n"
+    );
 }
 
 #[test]
@@ -168,23 +199,61 @@ fn overwrite_part_of_dir_and_skip_rest_based_on_timestamps() {
     let file_1_name = "temp-file-1";
     let file_2_name = "temp-file-2";
 
-    create_file(source_path.join("subDir").as_path(), &original_file_contents, file_1_name);
-    create_file(target_path.join("subDir").as_path(), &modified_file_contents, file_1_name);
-    create_file(target_path.join("subDir").as_path(), &original_file_contents, file_2_name);
+    create_file(
+        source_path.join("subDir").as_path(),
+        &original_file_contents,
+        file_1_name,
+    );
+    create_file(
+        target_path.join("subDir").as_path(),
+        &modified_file_contents,
+        file_1_name,
+    );
+    create_file(
+        target_path.join("subDir").as_path(),
+        &original_file_contents,
+        file_2_name,
+    );
 
     sleep(Duration::new(1, 0));
 
-    create_file(source_path.join("subDir").as_path(), &modified_file_contents, file_2_name);
+    create_file(
+        source_path.join("subDir").as_path(),
+        &modified_file_contents,
+        file_2_name,
+    );
 
     match copy(source_path, target_path, vec![]) {
         Ok(_) => {}
-        Err(e) => panic!("{}", e)
+        Err(e) => panic!("{}", e),
     }
 
-    assert!(target_path.join("subDir").join(file_1_name.to_owned() + ".txt").exists());
-    assert!(target_path.join("subDir").join(file_2_name.to_owned() + ".txt").exists());
-    assert_eq!(read_to_string(target_path.join("subDir").join(file_1_name.to_owned() + ".txt")).unwrap(), modified_file_contents.to_owned() + "\n");
-    assert_eq!(read_to_string(target_path.join("subDir").join(file_2_name.to_owned() + ".txt")).unwrap(), modified_file_contents.to_owned() + "\n");
+    assert!(target_path
+        .join("subDir")
+        .join(file_1_name.to_owned() + ".txt")
+        .exists());
+    assert!(target_path
+        .join("subDir")
+        .join(file_2_name.to_owned() + ".txt")
+        .exists());
+    assert_eq!(
+        read_to_string(
+            target_path
+                .join("subDir")
+                .join(file_1_name.to_owned() + ".txt")
+        )
+        .unwrap(),
+        modified_file_contents.to_owned() + "\n"
+    );
+    assert_eq!(
+        read_to_string(
+            target_path
+                .join("subDir")
+                .join(file_2_name.to_owned() + ".txt")
+        )
+        .unwrap(),
+        modified_file_contents.to_owned() + "\n"
+    );
 }
 
 #[test]
@@ -207,17 +276,26 @@ fn copy_dir_but_ignored_blacklist() {
     create_file(sub_dir.as_path(), &file_contents, file_name);
     create_file(blacklisted_dir.as_path(), &file_contents, "ignoredFile");
 
-    match copy(source_path, target_path, vec![String::from("blacklisted_dir")]) {
+    match copy(
+        source_path,
+        target_path,
+        vec![String::from("blacklisted_dir")],
+    ) {
         Ok(_) => {}
-        Err(e) => panic!("{}", e)
+        Err(e) => panic!("{}", e),
     }
 
-    let target_file = target_path.join("subDir").join(file_name.to_owned() + ".txt");
+    let target_file = target_path
+        .join("subDir")
+        .join(file_name.to_owned() + ".txt");
     let ignored_target_file = target_path.join("blacklisted_dir").join("ignoredFile.txt");
 
     assert!(target_file.exists());
     assert!(!ignored_target_file.exists());
-    assert_eq!(read_to_string(target_file).unwrap(), file_contents.to_owned() + "\n");
+    assert_eq!(
+        read_to_string(target_file).unwrap(),
+        file_contents.to_owned() + "\n"
+    );
 }
 
 #[test]
@@ -237,19 +315,45 @@ fn copy_dir_and_file_nested_in_hierarchy() {
     let file_contents = "This is a test file";
     let file_name = "temp-file";
 
-    create_file(sub_dir.as_path(), &file_contents, &(file_name.to_owned() + "-1"));
-    create_file(sub_sub_dir.as_path(), &file_contents, &(file_name.to_owned() + "-2"));
+    create_file(
+        sub_dir.as_path(),
+        &file_contents,
+        &(file_name.to_owned() + "-1"),
+    );
+    create_file(
+        sub_sub_dir.as_path(),
+        &file_contents,
+        &(file_name.to_owned() + "-2"),
+    );
 
-    match copy(source_path, target_path, vec![String::from("blacklisted_dir"), String::from("blacklisted_dir_2")]) {
+    match copy(
+        source_path,
+        target_path,
+        vec![
+            String::from("blacklisted_dir"),
+            String::from("blacklisted_dir_2"),
+        ],
+    ) {
         Ok(_) => {}
-        Err(e) => panic!("{}", e)
+        Err(e) => panic!("{}", e),
     }
 
-    let target_file_1 = target_path.join("subDir").join(file_name.to_owned() + "-1.txt");
-    let target_file_2 = target_path.join("subDir").join("subSubDir").join(file_name.to_owned() + "-2.txt");
+    let target_file_1 = target_path
+        .join("subDir")
+        .join(file_name.to_owned() + "-1.txt");
+    let target_file_2 = target_path
+        .join("subDir")
+        .join("subSubDir")
+        .join(file_name.to_owned() + "-2.txt");
 
     assert!(target_file_1.exists());
     assert!(target_file_2.exists());
-    assert_eq!(read_to_string(target_file_1).unwrap(), file_contents.to_owned() + "\n");
-    assert_eq!(read_to_string(target_file_2).unwrap(), file_contents.to_owned() + "\n");
+    assert_eq!(
+        read_to_string(target_file_1).unwrap(),
+        file_contents.to_owned() + "\n"
+    );
+    assert_eq!(
+        read_to_string(target_file_2).unwrap(),
+        file_contents.to_owned() + "\n"
+    );
 }

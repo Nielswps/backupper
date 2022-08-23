@@ -1,4 +1,3 @@
-use backupper;
 use config::Config;
 
 fn main() {
