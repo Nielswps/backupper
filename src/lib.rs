@@ -62,15 +62,15 @@ pub fn copy<U: AsRef<Path>, V: AsRef<Path>>(
                             }
                         };
 
-                        let dest_time = match get_last_modified(&dest_path) {
-                            Ok(time) => time,
-                            Err(e) => {
-                                println!("Retrieving metadata of file: {:?}, resulted in: {:?}", &path, &e);
-                                continue;
-                            }
-                        };
-
                         if dest_path.exists() {
+                            let dest_time = match get_last_modified(&dest_path) {
+                                Ok(time) => time,
+                                Err(e) => {
+                                    println!("Retrieving metadata of file: {:?}, resulted in: {:?}", &path, &e);
+                                    continue;
+                                }
+                            };
+
                             if source_time.cmp(&dest_time).is_le()
                             {
                                 continue;
